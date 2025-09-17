@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Word Scramble Challenge</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(135deg, #a2d2ff, #ffafcc);
+      color: #333;
+      padding: 20px;
+    }
+    h1 {
+      color: #2a2a72;
+    }
+    #scramble {
+      font-size: 32px;
+      font-weight: bold;
+      margin: 20px 0;
+      letter-spacing: 5px;
+    }
+    input {
+      padding: 10px;
+      font-size: 18px;
+      width: 200px;
+      border: 2px solid #333;
+      border-radius: 8px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      margin: 10px;
+      cursor: pointer;
+      background: #2a2a72;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
+    #timer {
+      font-size: 20px;
+      margin: 15px 0;
+      font-weight: bold;
+    }
+    #message {
+      margin-top: 15px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔤 Word Scramble Challenge 🔤</h1>
+  <p id="scramble"></p>
+  <input type="text" id="guess" placeholder="Your guess here">
+  <br>
+  <button onclick="checkWord()">Submit</button>
+  <button onclick="newWord()">New Word</button>
+  <p id="timer">⏳ Time Left: 20</p>
+  <p id="message"></p>
+
+  <script>
+    const words = ["javascript", "planet", "bottle", "orange", "keyboard", "laptop", "puzzle", "random", "future"];
+    let currentWord = "";
+    let scrambled = "";
+    let timer = 20;
+    let countdown;
+
+    function shuffle(word) {
+      return word.split("").sort(() => 0.5 - Math.random()).join("");
+    }
+
+    function newWord() {
+      clearInterval(countdown);
+      timer = 20;
+      document.getElementById("timer").textContent = "⏳ Time Left: " + timer;
+
+      currentWord = words[Math.floor(Math.random() * words.length)];
+      scrambled = shuffle(currentWord);
+      while (scrambled === currentWord) {
+        scrambled = shuffle(currentWord); 
+      }
+      document.getElementById("scramble").textContent = scrambled.toUpperCase();
+      document.getElementById("message").textContent = "";
+      document.getElementById("guess").value = "";
+
+      countdown = setInterval(() => {
+        timer--;
+        document.getElementById("timer").textContent = "⏳ Time Left: " + timer;
+        if (timer <= 0) {
+          clearInterval(countdown);
+          document.getElementById("message").textContent = "❌ Time’s up! The word was: " + currentWord;
+        }
+      }, 1000);
+    }
+
+    function checkWord() {
+      let guess = document.getElementById("guess").value.toLowerCase();
+      if (guess === currentWord) {
+        document.getElementById("message").textContent = "✅ Correct! Great job!";
+        clearInterval(countdown);
+      } else {
+        document.getElementById("message").textContent = "❌ Wrong guess, try again!";
+      }
+    }
+
+    // Listen for Enter key press
+    document.getElementById("guess").addEventListener("keyup", function(event) {
+      if (event.key === "Enter") {
+        checkWord();
+      }
+    });
+
+    // start with a word
+    newWord();
+  </script>
+</body>
+</html>
