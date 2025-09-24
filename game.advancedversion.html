@@ -1,306 +1,320 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Ultimate Memory Match Game</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background: linear-gradient(135deg, #74ebd5, #9face6);
-      margin: 0;
-      padding: 0;
-      transition: background 0.5s, color 0.5s;
-    }
-    body.dark-mode {
-      background: #222;
-      color: #fff;
-    }
-    h1 {
-      margin: 20px 0;
-    }
-    #gameBoard {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-      gap: 10px;
-      justify-content: center;
-      margin: 20px auto;
-      max-width: 450px;
-    }
-    .card {
-      width: 100%;
-      height: 100px;
-      background: #333;
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      color: transparent;
-      transition: background 0.3s, color 0.3s;
-      perspective: 600px;
-    }
-    .cardInner {
-      transition: transform 0.5s;
-      transform-style: preserve-3d;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      background: inherit;
-    }
-    .card.flipped .cardInner {
-      transform: rotateY(180deg);
-      background: #fff;
-      color: #000;
-    }
-    .match-animation {
-      animation: pop 0.5s ease forwards;
-    }
-    @keyframes pop {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.3); }
-      100% { transform: scale(1); }
-    }
-    #menu, #gameScreen, #endScreen {
-      display: none;
-    }
-    #stats {
-      margin: 10px 0;
-    }
-    button {
-      margin: 5px;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 6px;
-      border: none;
-      background: #0077cc;
-      color: white;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background: #005fa3;
-    }
-    .chat-link {
-      display: block;
-      margin: 10px 0;
-      font-size: 0.95em;
-      color: #0077cc;
-      text-decoration: none;
-    }
-    .chat-link:hover {
-      text-decoration: underline;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Ultimate Memory Match Game</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(-45deg, #74ebd5, #9face6, #fbc2eb, #a6c1ee);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+  transition: background 0.5s, color 0.5s;
+}
+@keyframes gradient {0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+body.dark-mode { background: #222; color: #fff; animation: none; }
+
+h1 { margin: 20px 0; font-size: 2em; }
+#gameBoard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  gap: 8px;
+  justify-content: center;
+  margin: 20px auto;
+  max-width: 450px;
+}
+.card {
+  width: 100%;
+  height: 80px;
+  background: #333;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: transparent;
+  perspective: 600px;
+  transition: transform 0.3s;
+  touch-action: manipulation;
+  position: relative;
+}
+.cardInner {
+  transition: transform 0.5s;
+  transform-style: preserve-3d;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: inherit;
+}
+.card.flipped .cardInner { transform: rotateY(180deg) scale(1.1); background: linear-gradient(135deg, #fff, #e0e0e0); color: #000; }
+.match-animation { animation: pop 0.5s ease forwards, shine 0.6s ease; }
+@keyframes pop {0%{transform:scale(1);}50%{transform:scale(1.3);}100%{transform:scale(1);}}
+@keyframes shine {0%{box-shadow:0 0 0 #fff;}50%{box-shadow:0 0 15px #ff0;}100%{box-shadow:0 0 0 #fff;}}
+
+#menu, #gameScreen, #endScreen { display: none; }
+#stats { margin: 10px 0; font-size: 1em; }
+
+button {
+  margin:5px;
+  padding: 10px 16px;
+  font-size: 16px;
+  cursor:pointer;
+  border-radius:6px;
+  border:none;
+  background:#0077cc;
+  color:white;
+  transition: background 0.3s;
+}
+button:hover { background:#005fa3; }
+
+.chat-link {
+  display:block;
+  margin:10px 0;
+  font-size:0.95em;
+  color:#0077cc;
+  text-decoration:none;
+}
+.chat-link:hover { text-decoration:underline; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  h1 { font-size: 1.6em; }
+  #gameBoard { grid-template-columns: repeat(auto-fit, minmax(50px, 1fr)); gap:6px; max-width: 90%; }
+  .card { height: 60px; font-size: 20px; }
+  button { padding: 8px 12px; font-size: 14px; }
+}
+@media (max-width: 480px) {
+  h1 { font-size: 1.4em; }
+  #gameBoard { grid-template-columns: repeat(auto-fit, minmax(45px, 1fr)); gap:5px; }
+  .card { height: 50px; font-size: 18px; }
+  button { padding: 6px 10px; font-size: 13px; }
+}
+
+/* Confetti */
+canvas#confetti { position: fixed; top:0; left:0; pointer-events:none; z-index:9999; }
+
+/* Power-up glows */
+.power-up-shuffle::before,
+.power-up-freeze::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(255,255,255,0.5) 10%, transparent 70%);
+  opacity: 0;
+  animation: sparkle 1.5s infinite;
+}
+.power-up-shuffle { box-shadow:0 0 10px 2px #1e90ff; animation: pulseBlue 1.2s infinite; }
+.power-up-freeze { box-shadow:0 0 10px 2px #ff4500; animation: pulseRed 1.2s infinite; }
+
+@keyframes pulseBlue {
+  0% { transform: scale(1); box-shadow:0 0 5px 2px #1e90ff; }
+  50% { transform: scale(1.1); box-shadow:0 0 15px 5px #1e90ff; }
+  100% { transform: scale(1); box-shadow:0 0 5px 2px #1e90ff; }
+}
+@keyframes pulseRed {
+  0% { transform: scale(1); box-shadow:0 0 5px 2px #ff4500; }
+  50% { transform: scale(1.1); box-shadow:0 0 15px 5px #ff4500; }
+  100% { transform: scale(1); box-shadow:0 0 5px 2px #ff4500; }
+}
+@keyframes sparkle {
+  0% { opacity:0; transform: scale(0.5) rotate(0deg);}
+  25%{opacity:0.7; transform: scale(1) rotate(45deg);}
+  50%{opacity:0; transform: scale(0.5) rotate(90deg);}
+  75%{opacity:0.7; transform: scale(1) rotate(135deg);}
+  100%{opacity:0; transform: scale(0.5) rotate(180deg);}
+}
+
+/* Tooltips */
+.card[data-tooltip] { position: relative; }
+.card[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.card[data-tooltip]:hover::after,
+.card[data-tooltip].show-tooltip::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+</style>
 </head>
 <body>
-  <h1>Ultimate Memory Match Game</h1>
+<h1>Ultimate Memory Match Game</h1>
 
-  <!-- MENU -->
-  <div id="menu">
-    <a href="https://chatgpt.com/share/68d38845-bb18-8011-a3a8-1da20eb4d77f" 
-       target="_blank" class="chat-link">📄 Open Conversation in New Tab</a>
-    <h2>Enter Player Name</h2>
-    <input id="playerName" placeholder="Your Name">
-    <button onclick="startSinglePlayer()">Start Single Player</button>
-    <button onclick="startMultiplayer()">Start Multiplayer</button>
-    <button onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
-  </div>
+<div id="menu">
+<a href="https://chatgpt.com/share/68d3675c-86ac-8011-8d97-3a7724a7a14c" target="_blank" class="chat-link">📄 Open Conversation in New Tab</a>
+<h2>Enter Player Name</h2>
+<input id="playerName" placeholder="Your Name">
+<h3>Select Level</h3>
+<select id="levelSelect">
+<option value="easy">Easy (4 pairs)</option>
+<option value="medium" selected>Medium (8 pairs)</option>
+<option value="hard">Hard (12 pairs)</option>
+</select>
+<br>
+<button onclick="startSinglePlayer()">Start Single Player</button>
+<button onclick="startMultiplayer()">Start Multiplayer</button>
+<button onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
+<button onclick="toggleMusic()">🎵 Toggle Music</button>
+</div>
 
-  <!-- GAME SCREEN -->
-  <div id="gameScreen">
-    <div id="stats">
-      <span id="currentPlayer"></span>
-      <span id="moves"></span>
-      <span id="timer"></span>
-    </div>
-    <div id="gameBoard"></div>
-    <button onclick="resetGame()">Restart</button>
-  </div>
+<div id="gameScreen">
+<div id="stats">
+<span id="currentPlayer"></span>
+<span id="moves"></span>
+<span id="timer"></span>
+</div>
+<div id="gameBoard"></div>
+<button onclick="resetGame()">Restart</button>
+</div>
 
-  <!-- END SCREEN -->
-  <div id="endScreen">
-    <h2 id="result"></h2>
-    <button onclick="showMenu()">Back to Menu</button>
-  </div>
+<div id="endScreen">
+<h2 id="result"></h2>
+<h3 id="stars"></h3>
+<button onclick="showMenu()">Back to Menu</button>
+</div>
 
-  <!-- Sounds -->
-  <audio id="flipSound" src="https://freesound.org/data/previews/170/170664_2437358-lq.mp3"></audio>
-  <audio id="matchSound" src="https://freesound.org/data/previews/109/109662_945474-lq.mp3"></audio>
-  <audio id="winSound" src="https://freesound.org/data/previews/331/331912_3248244-lq.mp3"></audio>
+<canvas id="confetti"></canvas>
 
-  <script>
-    const cardsArray = ['🍎','🍌','🍇','🍒','🍉','🍍','🥝','🍑'];
-    const gameBoard = document.getElementById("gameBoard");
-    const menu = document.getElementById("menu");
-    const gameScreen = document.getElementById("gameScreen");
-    const endScreen = document.getElementById("endScreen");
-    const movesSpan = document.getElementById("moves");
-    const timerSpan = document.getElementById("timer");
-    const currentPlayerSpan = document.getElementById("currentPlayer");
-    const playerNameInput = document.getElementById("playerName");
+<audio id="flipSound" src="https://freesound.org/data/previews/170/170664_2437358-lq.mp3"></audio>
+<audio id="matchSound" src="https://freesound.org/data/previews/109/109662_945474-lq.mp3"></audio>
+<audio id="winSound" src="https://freesound.org/data/previews/341/341695_6247425-lq.mp3"></audio>
+<audio id="bgMusic" src="https://freesound.org/data/previews/316/316847_5121236-lq.mp3" loop></audio>
 
-    const flipSound = document.getElementById("flipSound");
-    const matchSound = document.getElementById("matchSound");
-    const winSound = document.getElementById("winSound");
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+// All game logic
+const allCards = ['🍎','🍌','🍇','🍒','🍉','🍍','🥝','🍑','🍓','🍋','🥭','🍐'];
+const powerUps = ['🔄','⏱️'];
+const gameBoard = document.getElementById("gameBoard");
+const menu = document.getElementById("menu");
+const gameScreen = document.getElementById("gameScreen");
+const endScreen = document.getElementById("endScreen");
+const movesSpan = document.getElementById("moves");
+const timerSpan = document.getElementById("timer");
+const currentPlayerSpan = document.getElementById("currentPlayer");
+const playerNameInput = document.getElementById("playerName");
+const levelSelect = document.getElementById("levelSelect");
+const starsSpan = document.getElementById("stars");
+const flipSound = document.getElementById("flipSound");
+const matchSound = document.getElementById("matchSound");
+const winSound = document.getElementById("winSound");
+const bgMusic = document.getElementById("bgMusic");
 
-    let flippedCards = [];
-    let matchedPairs = 0;
-    let moves = 0;
-    let timer;
-    let timeElapsed = 0;
-    let multiplayer = false;
-    let currentPlayer = 0;
-    let players = [];
-    let scores = [];
+let cardsArray=[], flippedCards=[], matchedPairs=0, moves=0, timer, timeElapsed=0;
+let multiplayer=false, currentPlayer=0, players=[], scores=[], musicOn=false;
 
-    function showMenu() {
-      menu.style.display = "block";
-      gameScreen.style.display = "none";
-      endScreen.style.display = "none";
-    }
+// SHOW MENU
+function showMenu() {
+  menu.style.display="block"; gameScreen.style.display="none"; endScreen.style.display="none";
+  if(!winSound.paused){ winSound.pause(); winSound.currentTime=0; }
+  if(!bgMusic.paused){ bgMusic.pause(); }
+}
 
-    function startSinglePlayer() {
-      multiplayer = false;
-      players = [playerNameInput.value || "Player"];
-      currentPlayer = 0;
-      startGame();
-    }
+// START
+function startSinglePlayer(){ multiplayer=false; players=[playerNameInput.value||"Player"]; currentPlayer=0; startGame(); }
+function startMultiplayer(){ multiplayer=true; players=[playerNameInput.value||"Player 1","Player 2"]; currentPlayer=0; startGame(); }
 
-    function startMultiplayer() {
-      multiplayer = true;
-      players = [playerNameInput.value || "Player 1", "Player 2"];
-      currentPlayer = 0;
-      startGame();
-    }
+// START GAME
+function startGame(){
+  const level = levelSelect.value;
+  let baseCards = allCards.slice(0, level==="easy"?4:level==="medium"?8:12);
+  if(Math.random()<0.5){ const power = powerUps[Math.floor(Math.random()*powerUps.length)]; baseCards.push(power); }
+  cardsArray = baseCards;
+  menu.style.display="none"; gameScreen.style.display="block"; endScreen.style.display="none";
+  scores = players.map(()=>0); resetStats(); createBoard(); startTimer(); updateScores();
+}
 
-    function startGame() {
-      menu.style.display = "none";
-      gameScreen.style.display = "block";
-      endScreen.style.display = "none";
-      scores = players.map(() => 0);
-      resetStats();
-      createBoard();
-      startTimer();
-      updateScores();
-    }
+function resetStats(){ flippedCards=[]; matchedPairs=0; moves=0; timeElapsed=0; movesSpan.textContent="Moves:0"; currentPlayerSpan.textContent="Turn:"+players[currentPlayer]; }
 
-    function resetStats() {
-      flippedCards = [];
-      matchedPairs = 0;
-      moves = 0;
-      timeElapsed = 0;
-      movesSpan.textContent = "Moves: 0";
-      currentPlayerSpan.textContent = "Turn: " + players[currentPlayer];
-    }
+function createBoard(){
+  const doubleCards = [...cardsArray,...cardsArray].sort(()=>0.5-Math.random());
+  gameBoard.innerHTML="";
+  doubleCards.forEach(symbol=>{
+    const card=document.createElement("div"); card.classList.add("card");
+    if(symbol==='🔄'){ card.classList.add("power-up-shuffle"); card.setAttribute("data-tooltip","Shuffle remaining cards!"); }
+    if(symbol==='⏱️'){ card.classList.add("power-up-freeze"); card.setAttribute("data-tooltip","Freeze timer for 5 seconds!"); }
+    const inner=document.createElement("div"); inner.classList.add("cardInner"); inner.textContent=symbol;
+    card.appendChild(inner); card.addEventListener("click", flipCard);
+    card.addEventListener("touchstart", ()=>{ card.classList.add("show-tooltip"); setTimeout(()=>card.classList.remove("show-tooltip"),1000); });
+    gameBoard.appendChild(card);
+  });
+}
 
-    function createBoard() {
-      const doubleCards = [...cardsArray, ...cardsArray].sort(() => 0.5 - Math.random());
-      gameBoard.innerHTML = "";
-      doubleCards.forEach(symbol => {
-        const card = document.createElement("div");
-        card.classList.add("card");
-        const inner = document.createElement("div");
-        inner.classList.add("cardInner");
-        inner.textContent = symbol;
-        card.appendChild(inner);
-        card.addEventListener("click", flipCard);
-        gameBoard.appendChild(card);
-      });
-    }
+function flipCard(){
+  if(this.classList.contains("flipped")||flippedCards.length===2) return;
+  flipSound.play(); this.classList.add("flipped"); flippedCards.push(this);
+  if(flippedCards.length===2){ moves++; movesSpan.textContent="Moves:"+moves; checkMatch(); }
+}
 
-    function flipCard() {
-      if (this.classList.contains("flipped") || flippedCards.length === 2) return;
-      flipSound.play();
-      this.classList.add("flipped");
-      flippedCards.push(this);
-      if (flippedCards.length === 2) {
-        moves++;
-        movesSpan.textContent = "Moves: " + moves;
-        checkMatch();
-      }
-    }
+function checkMatch(){
+  const [c1,c2]=flippedCards; const s1=c1.querySelector('.cardInner').textContent; const s2=c2.querySelector('.cardInner').textContent;
+  if(s1===s2){ matchedPairs++; matchSound.play(); c1.classList.add("match-animation"); c2.classList.add("match-animation"); if(multiplayer)scores[currentPlayer]++; flippedCards=[]; updateScores(); if(matchedPairs===cardsArray.length) endGame(); }
+  else{ setTimeout(()=>{ c1.classList.remove("flipped"); c2.classList.remove("flipped"); flippedCards=[]; if(multiplayer)switchTurn(); updateScores(); },800); }
+}
 
-    function checkMatch() {
-      const [card1, card2] = flippedCards;
-      const symbol1 = card1.querySelector('.cardInner').textContent;
-      const symbol2 = card2.querySelector('.cardInner').textContent;
+function switchTurn(){ currentPlayer=(currentPlayer+1)%players.length; }
+function updateScores(){ if(multiplayer) currentPlayerSpan.textContent=players.map((p,i)=>`${p}: ${scores[i]}`).join(" | ")+" | Turn: "+players[currentPlayer]; else currentPlayerSpan.textContent="Player: "+players[0]; }
 
-      if (symbol1 === symbol2) {
-        matchedPairs++;
-        matchSound.play();
-        card1.classList.add("match-animation");
-        card2.classList.add("match-animation");
-        if (multiplayer) scores[currentPlayer]++;
-        flippedCards = [];
-        updateScores();
-        if (matchedPairs === cardsArray.length) endGame();
-      } else {
-        setTimeout(() => {
-          card1.classList.remove("flipped");
-          card2.classList.remove("flipped");
-          flippedCards = [];
-          if (multiplayer) switchTurn();
-          updateScores();
-        }, 800);
-      }
-    }
+function startTimer(){ clearInterval(timer); timer=setInterval(()=>{ timeElapsed++; timerSpan.textContent="Time:"+timeElapsed+"s"; },1000); }
 
-    function switchTurn() {
-      currentPlayer = (currentPlayer + 1) % players.length;
-    }
+function endGame(){
+  clearInterval(timer);
 
-    function updateScores() {
-      if (multiplayer) {
-        currentPlayerSpan.textContent = players.map((p, i) => `${p}: ${scores[i]}`).join(" | ") + ` | Turn: ${players[currentPlayer]}`;
-      } else {
-        currentPlayerSpan.textContent = "Player: " + players[0];
-      }
-    }
+  // Play victory soundtrack
+  winSound.volume=1.0; winSound.play();
+  let loopInterval = setInterval(()=>{ if(winSound.ended) winSound.play(); },1000);
+  setTimeout(()=>{
+    clearInterval(loopInterval);
+    let fadeAudio = setInterval(()=>{
+      if(winSound.volume>0.05){ winSound.volume-=0.05; } 
+      else{ winSound.pause(); winSound.currentTime=0; clearInterval(fadeAudio); }
+    },200);
+  },10000);
 
-    function startTimer() {
-      clearInterval(timer);
-      timer = setInterval(() => {
-        timeElapsed++;
-        timerSpan.textContent = "Time: " + timeElapsed + "s";
-      }, 1000);
-    }
+  gameScreen.style.display="none"; endScreen.style.display="block";
+  confetti.create(document.getElementById('confetti'),{resize:true})({particleCount:100, spread:70, origin:{y:0.6}});
+  let winnerText = multiplayer ? (() => {
+    const max=Math.max(...scores);
+    const winners=players.filter((p,i)=>scores[i]===max);
+    return winners.length===1 ? `${winners[0]} wins!` : "It's a tie!";
+  })() : `${players[0]} finished!`;
+  document.getElementById("result").textContent=`🎉 ${winnerText} Moves:${moves}, Time:${timeElapsed}s`;
+  const rating = moves<cardsArray.length*2?3:moves<cardsArray.length*3?2:1;
+  starsSpan.textContent="⭐".repeat(rating);
+}
 
-    function endGame() {
-      clearInterval(timer);
-      winSound.play();
-      gameScreen.style.display = "none";
-      endScreen.style.display = "block";
-      let winnerText;
-      if (multiplayer) {
-        const maxScore = Math.max(...scores);
-        const winners = players.filter((p, i) => scores[i] === maxScore);
-        winnerText = winners.length === 1 ? `${winners[0]} wins!` : `It's a tie!`;
-      } else {
-        winnerText = `${players[0]} finished!`;
-      }
-      document.getElementById("result").textContent = `🎉 ${winnerText} Moves: ${moves}, Time: ${timeElapsed}s`;
-    }
+function resetGame(){ startGame(); }
+function toggleDarkMode(){ document.body.classList.toggle("dark-mode"); localStorage.setItem("darkMode",document.body.classList.contains("dark-mode")); }
+if(localStorage.getItem("darkMode")==="true") document.body.classList.add("dark-mode");
 
-    function resetGame() {
-      startGame();
-    }
+function toggleMusic(){ musicOn=!musicOn; musicOn?bgMusic.play():bgMusic.pause(); }
 
-    function toggleDarkMode() {
-      document.body.classList.toggle("dark-mode");
-      localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
-    }
-
-    // Load dark mode preference
-    if (localStorage.getItem("darkMode") === "true") {
-      document.body.classList.add("dark-mode");
-    }
-
-    showMenu();
-  </script>
+showMenu();
+</script>
 </body>
 </html>
