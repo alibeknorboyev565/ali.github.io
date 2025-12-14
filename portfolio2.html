@@ -1,4 +1,3 @@
-Зарина, [14.12.2025 18:40]
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -179,7 +178,6 @@
   </div>
 </section>
 
-Зарина, [14.12.2025 18:40]
 <section id="projects">
   <h2>Projects</h2>
   <div class="grid">
@@ -254,7 +252,7 @@
       const nums = data.map(r => Number(r[h])).filter(v => !isNaN(v));
       if(nums.length){
         const avg = nums.reduce((a,b)=>a+b,0)/nums.length;
-        res += ${h}: mean = ${avg.toFixed(2)}\n;
+        res += `${h}: mean = ${avg.toFixed(2)}\n`;
       }
     });
     output(res || "No numeric data.");
@@ -272,7 +270,7 @@
         if(!isNaN(v) && Math.abs((v-m)/s) > 3) anomalies.push(r);
       });
     });
-    output(Anomalies found: ${anomalies.length});
+    output(`Anomalies found: ${anomalies.length}`);
   }
 
   function download() {
