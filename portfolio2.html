@@ -1,17 +1,24 @@
+Зарина, [14.12.2025 18:40]
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Norboyev Alibek - Portfolio</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     html { scroll-behavior: smooth; }
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       background: linear-gradient(135deg, #111, #333);
       color: #eee;
     }
+
     header {
       background: #222;
       color: white;
@@ -19,8 +26,10 @@
       padding: 2.5rem 1rem;
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
+
     header h1 { font-size: 2.5rem; margin-bottom: 0.3rem; }
     header p { margin: 0.2rem 0; color: #ccc; }
+
     nav {
       display: flex;
       justify-content: center;
@@ -30,13 +39,16 @@
       top: 0;
       z-index: 10;
     }
+
     nav a {
       color: #eee;
       padding: 0.8rem 1.2rem;
       text-decoration: none;
       transition: 0.3s;
     }
+
     nav a:hover { background: #444; color: #ffd700; }
+
     section {
       max-width: 900px;
       margin: 2rem auto;
@@ -45,7 +57,9 @@
       transform: translateY(20px);
       transition: opacity 0.8s ease, transform 0.8s ease;
     }
+
     section.visible { opacity: 1; transform: translateY(0); }
+
     section h2 {
       color: #ffd700;
       margin-bottom: 1rem;
@@ -53,11 +67,13 @@
       display: inline-block;
       padding-bottom: 0.2rem;
     }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 1rem;
     }
+
     .card {
       background: #222;
       padding: 1rem;
@@ -65,151 +81,215 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.6);
       transition: 0.3s;
     }
+
     .card:hover {
       transform: translateY(-5px) scale(1.02);
       box-shadow: 0 0 15px #ffd700;
     }
-    ul { line-height: 1.8; list-style: none; padding: 0; }
+
+    ul { list-style: none; padding: 0; }
+
     #hobbies li {
       background: #222;
       margin: 0.5rem 0;
       padding: 0.7rem 1rem;
       border-radius: 6px;
-      transition: 0.3s;
-      cursor: default;
     }
-    #hobbies li:hover {
-      background: #333;
-      color: #ffd700;
-      box-shadow: 0 0 10px #ffd700;
-      transform: translateX(5px);
-    }
+
     .contact {
       text-align: center;
       padding: 2rem 1rem;
       background: #111;
-      color: #eee;
       margin-top: 2rem;
     }
-    .contact a {
-      color: #ffd700;
-      text-decoration: none;
-      transition: 0.3s;
-    }
-    .contact a:hover { text-decoration: underline; }
+
     footer {
       text-align: center;
       padding: 1rem;
       background: #000;
       color: #888;
-      font-size: 0.9rem;
+    }
+
+    /* ===== DD TOOL ===== */
+    #dd-tool {
+      background: #111;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 25px rgba(255,215,0,0.25);
+    }
+
+    #dd-tool input {
+      margin-bottom: 1rem;
+    }
+
+    #dd-tool button {
+      background: #222;
+      color: #ffd700;
+      border: 1px solid #ffd700;
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    #dd-tool button:hover {
+      background: #ffd700;
+      color: #000;
+    }
+
+    #output {
+      background: #000;
+      color: #0f0;
+      padding: 1rem;
+      margin-top: 1rem;
+      height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      border-radius: 6px;
     }
   </style>
 </head>
+
 <body>
-  <header>
-    <h1>Norboyev Alibek</h1>
-    <p>Student Number: 2518454</p>
-    <p>Language Learner | Curious Student</p>
-  </header>
 
-  <nav>
-    <a href="#about">About</a>
-    <a href="#skills">Skills</a>
-    <a href="#projects">Projects</a>
-    <a href="#concepts">Concepts Learned</a>
-    <a href="#hobbies">Hobbies</a>
-    <a href="#contact">Contact</a>
-  </nav>
+<header>
+  <h1>Norboyev Alibek</h1>
+  <p>Student Number: 2518454</p>
+  <p>Language Learner | Curious Student</p>
+</header>
 
-  <section id="about">
-    <h2>About Me</h2>
-    <p>
-      Hi! I'm <b>Alibek</b>, a student passionate about learning new languages and improving communication skills.  
-      I enjoy studying, challenging myself with new knowledge, and using technology as part of my learning journey.  
-      This page showcases my interests and progress as a student.
-    </p>
-  </section>
+<nav>
+  <a href="#about">About</a>
+  <a href="#skills">Skills</a>
+  <a href="#projects">Projects</a>
+  <a href="#dd-tool">DD Tool</a>
+  <a href="#contact">Contact</a>
+</nav>
 
-  <section id="skills">
-    <h2>Skills</h2>
-    <div class="grid">
-      <div class="card"><h3>Languages</h3><p>Korean (TOPIK), English, Uzbek</p></div>
-      <div class="card"><h3>Learning Skills</h3><p>Note-taking 📝, Memorization 🧠, Active Listening 👂</p></div>
-      <div class="card"><h3>Study Tools</h3><p>Netflix 🎬, ChatGPT 🤖, Translator Apps 🌐</p></div>
-      <div class="card"><h3>Soft Skills</h3><p>Adaptability 🔄, Problem Solving 🧩, Teamwork 🤝</p></div>
+<section id="about">
+  <h2>About Me</h2>
+  <p>I’m Alibek, a student interested in learning, technology, and improving analytical skills.</p>
+</section>
+
+<section id="skills">
+  <h2>Skills</h2>
+  <div class="grid">
+    <div class="card">Languages: Korean, English, Uzbek</div>
+    <div class="card">Tools: ChatGPT, Online Courses</div>
+    <div class="card">Soft Skills: Problem Solving, Focus</div>
+  </div>
+</section>
+
+Зарина, [14.12.2025 18:40]
+<section id="projects">
+  <h2>Projects</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Old Game</h3>
+      <a href="https://alibeknorboyev565.github.io/ali.github.io/game4.html" target="_blank">Play</a>
     </div>
-  </section>
-
-  <section id="projects">
-    <h2>Projects</h2>
-    <div class="grid">
-      <div class="card">
-        <h3>Old Game</h3>
-        <p>A fun mini-game I created to practice coding basics. 
-          <a href="https://alibeknorboyev565.github.io/ali.github.io/game4.html" target="_blank">Play it here</a>
-        </p>
-      </div>
-      <div class="card">
-        <h3>Improved Game</h3>
-        <p>An enhanced version of my old game with better graphics, effects, and gameplay. 
-          <a href="https://alibeknorboyev565.github.io/ali.github.io/game.advancedversion.html" target="_blank">Play it here</a>
-        </p>
-      </div>
-      <div class="card">
-        <h3>Prompts Used</h3>
-        <p>You can check the prompts I used while developing my game here: 
-          <a href="https://docs.google.com/document/d/1b0mh8BL-oOU-N4CTudhSH832O8VLKwb_/edit?usp=drive_link&ouid=109224879008146278208&rtpof=true&sd=true" target="_blank">
-            View Prompts Document
-          </a>
-        </p>
-      </div>
+    <div class="card">
+      <h3>Improved Game</h3>
+      <a href="https://alibeknorboyev565.github.io/ali.github.io/game.advancedversion.html" target="_blank">Play</a>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- New Concepts Learned Section -->
-  <section id="concepts">
-    <h2>Concepts Learned</h2>
-    <p>
-      Throughout my learning journey, I documented key concepts and insights with ChatGPT.  
-      You can view my history and notes here:  
-      <a href="https://chatgpt.com/share/6901ea21-ff10-8011-8b33-800d1e9e0b63" target="_blank">View ChatGPT History</a>
-    </p>
-  </section>
+<section id="dd-tool">
+  <h2>🕵️ Data Detectives Tool</h2>
 
-  <section id="hobbies">
-    <h2>Hobbies & Interests</h2>
-    <ul>
-      <li>Playing football with friends ⚽</li>
-      <li>Gaming (FIFA, racing games, and mobile games) 🎮</li>
-      <li>Watching tech & study videos on YouTube ▶️</li>
-      <li>Exploring new languages and cultures 🌍</li>
-      <li>Listening to music while studying 🎧</li>
-    </ul>
-  </section>
+  <input type="file" id="csvFile" accept=".csv">
 
-  <section id="contact" class="contact">
-    <h2>Contact Me</h2>
-    <p>Email: <a href="mailto:alibeknorboyev565@gmail.com">alibeknorboyev565@gmail.com</a></p>
-    <p>Phone: <a href="tel:+8201033905655">+82 010-3390-5655</a></p>
-    <p>GitHub: <a href="https://github.com/alibek" target="_blank">github.com/alibek</a></p>
-  </section>
+  <div class="grid">
+    <button onclick="preview()">Preview</button>
+    <button onclick="stats()">Statistics</button>
+    <button onclick="analyze()">Z-Score Anomalies</button>
+    <button onclick="download()">Export Anomalies</button>
+  </div>
 
-  <footer>
-    &copy; 2025 Norboyev Alibek | Student Portfolio
-  </footer>
+  <pre id="output">Upload a CSV to begin.</pre>
+</section>
 
-  <script>
-    // Animate sections when scrolling
-    const sections = document.querySelectorAll('section');
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if(entry.isIntersecting){
-          entry.target.classList.add('visible');
-        }
+<section id="contact" class="contact">
+  <h2>Contact</h2>
+  <p>Email: alibeknorboyev565@gmail.com</p>
+</section>
+
+<footer>
+  © 2025 Norboyev Alibek
+</footer>
+
+<script>
+  const sections = document.querySelectorAll("section");
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => e.isIntersecting && e.target.classList.add("visible"));
+  }, { threshold: 0.2 });
+  sections.forEach(s => observer.observe(s));
+
+  let data = [], headers = [], anomalies = [];
+
+  document.getElementById("csvFile").addEventListener("change", e => {
+    const reader = new FileReader();
+    reader.onload = () => parse(reader.result);
+    reader.readAsText(e.target.files[0]);
+  });
+
+  function parse(text) {
+    const rows = text.trim().split("\n");
+    headers = rows[0].split(",");
+    data = rows.slice(1).map(r => {
+      const o = {};
+      r.split(",").forEach((v,i)=>o[headers[i]]=v);
+      return o;
+    });
+    output("CSV loaded successfully.");
+  }
+
+  function preview() {
+    output(JSON.stringify(data.slice(0,5), null, 2));
+  }
+
+  function stats() {
+    let res = "";
+    headers.forEach(h => {
+      const nums = data.map(r => Number(r[h])).filter(v => !isNaN(v));
+      if(nums.length){
+        const avg = nums.reduce((a,b)=>a+b,0)/nums.length;
+        res += ${h}: mean = ${avg.toFixed(2)}\n;
+      }
+    });
+    output(res || "No numeric data.");
+  }
+
+  function analyze() {
+    anomalies = [];
+    headers.forEach(h => {
+      const nums = data.map(r => Number(r[h])).filter(v=>!isNaN(v));
+      if(!nums.length) return;
+      const m = nums.reduce((a,b)=>a+b,0)/nums.length;
+      const s = Math.sqrt(nums.reduce((a,b)=>a+(b-m)**2,0)/nums.length);
+      data.forEach(r=>{
+        const v = Number(r[h]);
+        if(!isNaN(v) && Math.abs((v-m)/s) > 3) anomalies.push(r);
       });
-    }, { threshold: 0.2 });
-    sections.forEach(section => observer.observe(section));
-  </script>
+    });
+    output(Anomalies found: ${anomalies.length});
+  }
+
+  function download() {
+    if(!anomalies.length) return alert("No anomalies.");
+    const csv = headers.join(",") + "\n" +
+      anomalies.map(r => headers.map(h=>r[h]).join(",")).join("\n");
+    const blob = new Blob([csv], {type:"text/csv"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "anomalies.csv";
+    a.click();
+  }
+
+  function output(t) {
+    document.getElementById("output").textContent = t;
+  }
+</script>
+
 </body>
 </html>
