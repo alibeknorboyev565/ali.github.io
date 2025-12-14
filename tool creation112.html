@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DD Clues – Investigator Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    body { font-family: Inter, system-ui, Arial, sans-serif; margin: 0; background: #0f172a; color: #e5e7eb; }
+    header { padding: 20px; background: linear-gradient(90deg,#1e293b,#020617); }
+    header h1 { margin: 0; font-size: 26px; }
+    header p { margin: 6px 0 0; color: #94a3b8; }
+    main { padding: 20px; display: grid; grid-template-columns: 260px 1fr; gap: 20px; }
+    nav { background: #020617; border-radius: 14px; padding: 14px; }
+    nav button { width: 100%; margin-bottom: 8px; padding: 10px; background: #1e293b; color: #e5e7eb; border: none; border-radius: 8px; cursor: pointer; }
+    nav button:hover { background: #334155; }
+    section { background: #020617; padding: 16px; border-radius: 14px; display: none; }
+    section.active { display: block; }
+    table { border-collapse: collapse; width: 100%; margin-top: 10px; font-size: 12px; }
+    th, td { border-bottom: 1px solid #1e293b; padding: 6px; }
+    th { text-align: left; color: #94a3b8; }
+    input, select, button.action { padding: 8px; border-radius: 8px; border: none; margin: 4px 0; }
+    button.action { background: #2563eb; color: white; cursor: pointer; }
+    button.action.secondary { background: #16a34a; }
+    .hint { color: #94a3b8; font-size: 12px; }
+    canvas { margin-top: 12px; }
+    pre { background:#020617; padding:10px; border-radius:10px; overflow:auto; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>DD Clues – Investigator Dashboard</h1>
+  <p>Explore datasets, surface anomalies, and justify investigative clues</p>
+</header>
+
+<main>
+  <nav>
+    <input type="file" id="fileInput" accept=".csv" />
+    <p class="hint">Upload CSV to activate tools</p>
+    <button onclick="show('preview')">📋 Data Preview</button>
+    <button onclick="show('stats')">📊 Column Stats</button>
+    <button onclick="show('anomaly')">🚨 Anomaly Scanner</button>
+    <button onclick="show('category')">🏷 Categorical Patterns</button>
+    <button onclick="show('filter')">🔍 Filter Rows</button>
+    <button onclick="show('group')">🧮 Group & Aggregate</button>
+    <button onclick="show('time')">📈 Time Investigation</button>
+  </nav>
+
+  <section id="preview" class="active">
+    <h2>Full Dataset Preview</h2>
+    <div id="previewTable"></div>
+  </section>
+
+  <section id="stats">
+    <h2>Numeric Column Statistics</h2>
+    <div id="statsTable"></div>
+  </section>
+
+  <section id="anomaly">
+    <h2>Anomaly Scanner</h2>
+    <p class="hint">Uses Z-score & highlights potential DD clues</p>
+    <select id="anomalyColumn"></select><br>
+    <button class="action" onclick="findAnomalies()">Scan</button>
+    <button class="action secondary" onclick="downloadAnomalies()">Download Clues CSV</button>
+    <div id="anomalyTable"></div>
+  </section>
+
+  <section id="category">
+    <h2>Categorical Patterns</h2>
+    <select id="catColumn"></select>
+    <button class="action" onclick="showUniques()">Analyze</button>
+    <pre id="uniqueCounts"></pre>
+  </section>
+
+  <section id="filter">
+    <h2>Row Filter</h2>
+    <select id="filterColumn"></select>
+    <input id="filterValue" placeholder="Exact value" />
+    <button class="action" onclick="applyFilter()">Apply</button>
+    <div id="filteredTable"></div>
+  </section>
+
+  <section id="group">
+    <h2>Group & Aggregate</h2>
+    <select id="groupColumn"></select>
+    <select id="aggColumn"></select>
+    <select id="aggFunc">
+      <option value="count">Count</option>
+      <option value="sum">Sum</option>
+      <option value="avg">Average</option>
+    </select>
+    <button class="action" onclick="groupAggregate()">Run</button>
+    <div id="groupTable"></div>
+  </section>
+
+  <section id="time">
+    <h2>Time-Based Investigation</h2>
+    <select id="dateColumn"></select>
+    <select id="dateValueColumn"></select>
+    <button class="action" onclick="plotTimeSeries()">Plot</button>
+    <canvas id="timeChart"></canvas>
+  </section>
+</main>
+
+<script>
+let data=[], anomaliesData=[];
+function show(id){ document.querySelectorAll('section').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function renderTable(rows, id){ if(!rows.length){document.getElementById(id).innerHTML='No data';return;} let h='<table><tr>'; Object.keys(rows[0]).forEach(k=>h+=`<th>${k}</th>`); h+='</tr>'; rows.forEach(r=>{h+='<tr>'; Object.values(r).forEach(v=>h+=`<td>${v}</td>`); h+='</tr>';}); h+='</table>'; document.getElementById(id).innerHTML=h; }
+const mean=a=>a.reduce((x,y)=>x+y,0)/a.length; const std=(a,m)=>Math.sqrt(a.reduce((x,y)=>x+(y-m)**2,0)/a.length);
+fileInput.onchange=e=>Papa.parse(e.target.files[0],{header:true,dynamicTyping:true,skipEmptyLines:true,complete:r=>{data=r.data;renderTable(data,'previewTable');setup();stats();}});
+function setup(){const cols=Object.keys(data[0]); document.querySelectorAll('select').forEach(s=>{s.innerHTML='';cols.forEach(c=>s.innerHTML+=`<option>${c}</option>`);});}
+function stats(){let h='<table><tr><th>Column</th><th>Mean</th><th>Min</th><th>Max</th><th>Std</th></tr>'; Object.keys(data[0]).forEach(c=>{const n=data.map(r=>r[c]).filter(v=>typeof v==='number'); if(n.length){const m=mean(n); h+=`<tr><td>${c}</td><td>${m.toFixed(2)}</td><td>${Math.min(...n)}</td><td>${Math.max(...n)}</td><td>${std(n,m).toFixed(2)}</td></tr>`;}}); h+='</table>'; statsTable.innerHTML=h;}
+function findAnomalies(){const c=anomalyColumn.value; const n=data.map(r=>r[c]).filter(v=>typeof v==='number'); const m=mean(n), s=std(n,m); anomaliesData=data.filter(r=>typeof r[c]==='number'&&Math.abs((r[c]-m)/s)>3); renderTable(anomaliesData,'anomalyTable');}
+function downloadAnomalies(){if(!anomaliesData.length)return alert('No anomalies'); const csv=Papa.unparse(anomaliesData); const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv])); a.download='dd_clues_anomalies.csv'; a.click();}
+function showUniques(){const c=catColumn.value, m={}; data.forEach(r=>m[r[c]]=(m[r[c]]||0)+1); uniqueCounts.textContent=JSON.stringify(m,null,2);}
+function applyFilter(){const c=filterColumn.value,v=filterValue.value; renderTable(data.filter(r=>String(r[c])===v),'filteredTable');}
+function groupAggregate(){const g=groupColumn.value,a=aggColumn.value,f=aggFunc.value,res={}; data.forEach(r=>{res[r[g]]=res[r[g]]||[];res[r[g]].push(r[a]);}); const out=Object.keys(res).map(k=>({[g]:k,value:f==='count'?res[k].length:f==='sum'?res[k].reduce((x,y)=>x+y,0):mean(res[k])})); renderTable(out,'groupTable');}
+function plotTimeSeries(){const d=dateColumn.value,v=dateValueColumn.value; const rows=data.filter(r=>r[d]&&typeof r[v]==='number').sort((a,b)=>new Date(a[d])-new Date(b[d])); new Chart(timeChart,{type:'line',data:{labels:rows.map(r=>r[d]),datasets:[{label:v,data:rows.map(r=>r[v])}]}});}
+</script>
+</body>
+</html>
