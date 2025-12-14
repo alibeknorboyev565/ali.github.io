@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Norboyev Alibek - Portfolio</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #111, #333);
+      color: #eee;
+    }
+
+    header {
+      background: #222;
+      color: white;
+      text-align: center;
+      padding: 2.5rem 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    header h1 { font-size: 2.5rem; margin-bottom: 0.3rem; }
+    header p { margin: 0.2rem 0; color: #ccc; }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      background: #111;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    nav a {
+      color: #eee;
+      padding: 0.8rem 1.2rem;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    nav a:hover { background: #444; color: #ffd700; }
+
+    section {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    section.visible { opacity: 1; transform: translateY(0); }
+
+    section h2 {
+      color: #ffd700;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #ffd700;
+      display: inline-block;
+      padding-bottom: 0.2rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .card {
+      background: #222;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 0 15px #ffd700;
+    }
+
+    ul { list-style: none; padding: 0; }
+
+    #hobbies li {
+      background: #222;
+      margin: 0.5rem 0;
+      padding: 0.7rem 1rem;
+      border-radius: 6px;
+    }
+
+    .contact {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: #111;
+      margin-top: 2rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #000;
+      color: #888;
+    }
+
+    /* ===== DD TOOL ===== */
+    #dd-tool {
+      background: #111;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 25px rgba(255,215,0,0.25);
+    }
+
+    #dd-tool input {
+      margin-bottom: 1rem;
+    }
+
+    #dd-tool button {
+      background: #222;
+      color: #ffd700;
+      border: 1px solid #ffd700;
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    #dd-tool button:hover {
+      background: #ffd700;
+      color: #000;
+    }
+
+    #output {
+      background: #000;
+      color: #0f0;
+      padding: 1rem;
+      margin-top: 1rem;
+      height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Norboyev Alibek</h1>
+  <p>Student Number: 2518454</p>
+  <p>Language Learner | Curious Student</p>
+</header>
+
+<nav>
+  <a href="#about">About</a>
+  <a href="#skills">Skills</a>
+  <a href="#projects">Projects</a>
+  <a href="#dd-tool">DD Tool</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<section id="about">
+  <h2>About Me</h2>
+  <p>I’m Alibek, a student interested in learning, technology, and improving analytical skills.</p>
+</section>
+
+<section id="skills">
+  <h2>Skills</h2>
+  <div class="grid">
+    <div class="card">Languages: Korean, English, Uzbek</div>
+    <div class="card">Tools: ChatGPT, Online Courses</div>
+    <div class="card">Soft Skills: Problem Solving, Focus</div>
+  </div>
+</section>
+
+<section id="projects">
+  <h2>Projects</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Old Game</h3>
+      <a href="https://alibeknorboyev565.github.io/ali.github.io/game4.html" target="_blank">Play</a>
+    </div>
+    <div class="card">
+      <h3>Improved Game</h3>
+      <a href="https://alibeknorboyev565.github.io/ali.github.io/game.advancedversion.html" target="_blank">Play</a>
+    </div>
+  </div>
+</section>
+
+<section id="dd-tool">
+  <h2>🕵️ Data Detectives Tool</h2>
+
+  <input type="file" id="csvFile" accept=".csv">
+
+  <div class="grid">
+    <button onclick="preview()">Preview</button>
+    <button onclick="stats()">Statistics</button>
+    <button onclick="analyze()">Z-Score Anomalies</button>
+    <button onclick="download()">Export Anomalies</button>
+  </div>
+
+  <pre id="output">Upload a CSV to begin.</pre>
+</section>
+
+<section id="contact" class="contact">
+  <h2>Contact</h2>
+  <p>Email: alibeknorboyev565@gmail.com</p>
+</section>
+
+<footer>
+  © 2025 Norboyev Alibek
+</footer>
+
+<script>
+  const sections = document.querySelectorAll("section");
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => e.isIntersecting && e.target.classList.add("visible"));
+  }, { threshold: 0.2 });
+  sections.forEach(s => observer.observe(s));
+
+  let data = [], headers = [], anomalies = [];
+
+  document.getElementById("csvFile").addEventListener("change", e => {
+    const reader = new FileReader();
+    reader.onload = () => parse(reader.result);
+    reader.readAsText(e.target.files[0]);
+  });
+
+  function parse(text) {
+    const rows = text.trim().split("\n");
+    headers = rows[0].split(",");
+    data = rows.slice(1).map(r => {
+      const o = {};
+      r.split(",").forEach((v,i)=>o[headers[i]]=v);
+      return o;
+    });
+    output("CSV loaded successfully.");
+  }
+
+  function preview() {
+    output(JSON.stringify(data.slice(0,5), null, 2));
+  }
+
+  function stats() {
+    let res = "";
+    headers.forEach(h => {
+      const nums = data.map(r => Number(r[h])).filter(v => !isNaN(v));
+      if(nums.length){
+        const avg = nums.reduce((a,b)=>a+b,0)/nums.length;
+        res += `${h}: mean = ${avg.toFixed(2)}\n`;
+      }
+    });
+    output(res || "No numeric data.");
+  }
+
+  function analyze() {
+    anomalies = [];
+    headers.forEach(h => {
+      const nums = data.map(r => Number(r[h])).filter(v=>!isNaN(v));
+      if(!nums.length) return;
+      const m = nums.reduce((a,b)=>a+b,0)/nums.length;
+      const s = Math.sqrt(nums.reduce((a,b)=>a+(b-m)**2,0)/nums.length);
+      data.forEach(r=>{
+        const v = Number(r[h]);
+        if(!isNaN(v) && Math.abs((v-m)/s) > 3) anomalies.push(r);
+      });
+    });
+    output(`Anomalies found: ${anomalies.length}`);
+  }
+
+  function download() {
+    if(!anomalies.length) return alert("No anomalies.");
+    const csv = headers.join(",") + "\n" +
+      anomalies.map(r => headers.map(h=>r[h]).join(",")).join("\n");
+    const blob = new Blob([csv], {type:"text/csv"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "anomalies.csv";
+    a.click();
+  }
+
+  function output(t) {
+    document.getElementById("output").textContent = t;
+  }
+</script>
+
+</body>
+</html>
